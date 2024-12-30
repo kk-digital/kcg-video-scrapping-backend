@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Query, Request
 from h11 import Response
 
@@ -6,6 +6,7 @@ from controller import video_game_controller
 from schema.response_schema import ResponseSchema
 from schema.video_game_schema import (
     VideoGameCreateSchema,
+    VideoGameIdsRequest,
     VideoGameSchema,
     VideoGameUpdateSchema,
 )
@@ -20,10 +21,16 @@ router = APIRouter(prefix="/video-games", tags=["video-games"])
     response_model=ResponseSchema[List[VideoGameSchema]],
 )
 async def list_video_games(
-    request: Request, offset: int = Query(default=0), limit: int = Query(default=20)
+    request: Request,
+    offset: int = Query(default=0),
+    limit: int = Query(default=20),
+    title: str = Query(default=None),
 ):
+    # TODO: Investiage why offset is not specified in the query
+    if offset < 0:
+        offset = 0
     video_games = video_game_controller.get_all_video_games(
-        request.app.video_game_collection, offset, limit
+        request.app.video_game_collection, offset, limit, title
     )
 
     return ResponseSchema(
@@ -45,6 +52,21 @@ async def get_video_game_by_game_id(request: Request, game_id: str):
     return ResponseSchema(
         success=True, message="Video game retrieved successfully", data=video_game
     )
+
+
+@router.get(
+    "/get-video-games-count",
+    status_code=200,
+    description="Get the count of search queries",
+    response_model=ResponseSchema[int],
+)
+async def get_video_games_count(
+    request: Request,
+):
+    count = video_game_controller.get_video_games_count(
+        request.app.video_game_collection
+    )
+    return ResponseSchema(success=True, data=count)
 
 
 @router.post(
@@ -85,5 +107,20 @@ async def update_video_game(request: Request, video_game: VideoGameUpdateSchema)
 )
 async def delete_video_game(request: Request, game_id: str):
     video_game_controller.delete_video_game(request.app.video_game_collection, game_id)
+
+    return ResponseSchema(success=True, message="Video game deleted successfully")
+
+
+@router.delete(
+    "/delete-video-games",
+    status_code=200,
+    description="Delete video games with given game id",
+    response_model=ResponseSchema[None],
+)
+async def delete_video_game(request: Request, game_ids: VideoGameIdsRequest):
+    print("34567890-", game_ids)
+    video_game_controller.delete_video_games(
+        request.app.video_game_collection, game_ids.ids
+    )
 
     return ResponseSchema(success=True, message="Video game deleted successfully")

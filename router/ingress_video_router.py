@@ -24,9 +24,13 @@ async def list_ingress_videos(
     offset: int = Query(default=0),
     limit: int = Query(default=20),
     status: Optional[str] = Query(default=None),
+    title: Optional[str] = Query(default=None),
 ):
+    if offset < 0:
+        offset = 0
+
     ingress_videos = ingress_video_controller.get_list_ingress_videos(
-        request.app.ingress_video_collection, offset, limit, status
+        request.app.ingress_video_collection, offset, limit, status, title
     )
 
     return ResponseSchema(success=True, data=ingress_videos)

@@ -1,9 +1,11 @@
 from typing import List, Optional
 from fastapi import APIRouter, Query, Request
 from controller import search_query_controller
+from enums import SEARCH_QUERY_STATUS
 from schema.deleted_count_schema import DeletedCountSchema
 from schema.response_schema import ResponseSchema
 from schema.search_query_schema import (
+    QueryIdsRequest,
     SearchQueryCreateSchema,
     SearchQuerySchema,
     SearchQueryUpdateSchema,
@@ -22,9 +24,13 @@ async def list_search_queries(
     request: Request,
     offset: int = Query(default=0),
     limit: int = Query(default=20),
+    query: Optional[str] = Query(default=None),
+    status: Optional[SEARCH_QUERY_STATUS] = Query(default=None),
 ):
+    if offset < 0:
+        offset = 0
     search_queries = search_query_controller.list_search_queries(
-        request.app.search_query_collection, offset, limit
+        request.app.search_query_collection, offset, limit, query, status
     )
 
     return ResponseSchema(success=True, data=search_queries)
@@ -92,12 +98,31 @@ async def update_search_query(request: Request, search_query: SearchQueryUpdateS
 @router.delete(
     "/delete-search-query",
     status_code=200,
-    description="Delete an search query with given search query",
+    description="Delete an search query with given search query id",
     response_model=ResponseSchema[DeletedCountSchema],
 )
 def delete_search_query(request: Request, search_query_id: str = Query()):
     deleted_count = search_query_controller.delete_search_query(
         request.app.search_query_collection, id=search_query_id
+    )
+
+    return ResponseSchema(
+        success=True,
+        message="Search query deleted successfully",
+        data={"deleted_count": deleted_count},
+    )
+
+
+@router.delete(
+    "/delete-search-queries",
+    status_code=200,
+    description="Delete search queries with given search query ids",
+    response_model=ResponseSchema[DeletedCountSchema],
+)
+def delete_search_queries(request: Request, search_query_ids: QueryIdsRequest):
+    print("1234567890", search_query_ids.ids)
+    deleted_count = search_query_controller.delete_search_queries(
+        request.app.search_query_collection, search_ids=search_query_ids.ids
     )
 
     return ResponseSchema(

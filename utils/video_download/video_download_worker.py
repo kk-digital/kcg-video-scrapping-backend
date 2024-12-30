@@ -10,6 +10,7 @@ class VideoDownloadWorker:
         self.fetch_interrval = fetch_interval
         self.download_manager = VideoDownloadManager()
         self.is_running = False
+        self.max_workers = 4
 
     async def process_pending_downloads(self):
         pending_videos = http_get_pending_ingress_videos()
@@ -32,11 +33,17 @@ class VideoDownloadWorker:
         self.is_running = True
         while self.is_running:
             try:
-                if not self.download_manager.get_all_active_downloads():
+                active_downloads_count = (
+                    self.download_manager.get_active_downloads_count()
+                )
+                if self.max_workers < active_downloads_count:
                     await self.process_pending_downloads()
-
-                print(f"No active downloads, will idle for {self.fetch_interrval}")
-                await asyncio.sleep(self.fetch_interrval)
+                elif self.max_workers > active_downloads_count:
+                    print("Max workers reached, will idle for %s", self.fetch_interrval)
+                    await asyncio.sleep(self.fetch_interrval)
+                elif active_downloads_count == 0:
+                    print(f"No active downloads, will idle for {self.fetch_interrval}")
+                    await asyncio.sleep(self.fetch_interrval)
             except Exception as e:
                 self.is_running = False
                 download_logger.error("Error in VideoDownloadWorker: %s", e)

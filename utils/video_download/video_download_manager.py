@@ -183,6 +183,9 @@ class VideoDownloadManager:
     def get_all_active_downloads(self) -> Dict[str, Dict]:
         return self.active_downloads
 
+    def get_active_downloads_count(self) -> int:
+        return len(self.active_downloads)
+
     def get_downloading_status(self, video_id: str) -> Dict:
         """
         Get download status for a specific video_id.

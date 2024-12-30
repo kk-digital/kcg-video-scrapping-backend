@@ -11,7 +11,7 @@ class INGRESS_VIDEO_STATUS(str, Enum):
 
 class SEARCH_QUERY_STATUS(str, Enum):
     PENDING = "pending"
-    PROCESSING = "processing"
-    COMPLETED = "completed"
+    EXTRACTING = "extracting"
+    EXTRACTED = "extracted"
     FAILED = "failed"
     CANCELED = "canceled"

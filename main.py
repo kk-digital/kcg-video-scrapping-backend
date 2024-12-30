@@ -10,6 +10,7 @@ from router.ingress_video_router import router as ingress_video_router
 from router.video_game_router import router as video_game_router
 from router.search_query_router import router as search_query_router
 from utils.video_download.video_download_worker import VideoDownloadWorker
+from utils.video_scrapping.video_scrapping_worker import start_worker_process
 
 app = FastAPI(title="KCG Ingress Video Scrapping")
 worker = VideoDownloadWorker(fetch_interval=3)
@@ -37,7 +38,8 @@ def startup_db_client():
 
 async def startup():
     startup_db_client()
-    # app.worker_process = start_worker_process()
+    # app.download_worker_process = start_worker_process()
+    app.scrapping_worker_process = start_worker_process()
 
 
 async def shutdown_db_client() -> None:
@@ -46,9 +48,12 @@ async def shutdown_db_client() -> None:
 
 async def shutdown():
     shutdown_db_client()
-    if hasattr(app, "worker_process"):
-        app.worker_process.terminate()
-        app.worker_process.join()
+    if hasattr(app, "download_worker_process"):
+        app.download_worker_process.terminate()
+        app.download_worker_process.join()
+    if hasattr(app, "scrapping_worker_process"):
+        app.scrapping_worker_process.terminate()
+        app.scrapping_worker_process.join()
 
 
 def add_ingress_videos():

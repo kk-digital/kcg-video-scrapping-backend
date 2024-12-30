@@ -22,8 +22,8 @@ downalod_console_handler.setFormatter(download_formatter)
 download_logger.addHandler(downalod_console_handler)
 
 # ---------------------------------- Youtube Video Downloader Logger ----------------------------------
-scrap_logger = logging.getLogger("youtube_video_scrapper")
-scrap_logger.setLevel(logging.INFO)
+scrapping_logger = logging.getLogger("youtube_video_scrapper")
+scrapping_logger.setLevel(logging.INFO)
 # Create a file handler
 scrap_handler = logging.FileHandler("scrap.log")
 scrap_handler.setLevel(logging.INFO)
@@ -33,10 +33,10 @@ scrap_formatter = logging.Formatter(
 )
 scrap_handler.setFormatter(scrap_formatter)
 # Add the handlers to the scrapper_logger
-scrap_logger.addHandler(scrap_handler)
+scrapping_logger.addHandler(scrap_handler)
 
 # Create a stream handler for console output
 scrap_console_handler = logging.StreamHandler()
 scrap_console_handler.setLevel(logging.INFO)
 scrap_console_handler.setFormatter(scrap_formatter)
-scrap_logger.addHandler(scrap_console_handler)
+scrapping_logger.addHandler(scrap_console_handler)

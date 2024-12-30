@@ -1,6 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel, Field
-
+from datetime import datetime
 from enums import INGRESS_VIDEO_STATUS
 
 
@@ -48,4 +48,5 @@ class IngressVideoCreateSchema(IngressVideoBaseSchema):
 
 
 class IngressVideoSchema(IngressVideoBaseSchema):
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
     pass

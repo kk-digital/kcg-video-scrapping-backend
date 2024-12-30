@@ -1,12 +1,34 @@
-from typing import Optional
+from typing import List, Optional
 import uuid
 from datetime import datetime
+import pymongo
 from pymongo.collection import Collection
 from fastapi import HTTPException
 
+from enums import SEARCH_QUERY_STATUS
+from schema.search_query_schema import SearchQuerySchema
 
-def list_search_queries(collection: Collection, offset: int, limit: int):
-    return list(collection.find({}, {"_id": 0}).skip(offset).limit(limit))
+
+def list_search_queries(
+    collection: Collection,
+    offset: int,
+    limit: int,
+    search_query: Optional[str],
+    status: Optional[SEARCH_QUERY_STATUS],
+):
+    query = (
+        {"query": {"$regex": f".*{search_query}.*", "$options": "i"}}
+        if search_query
+        else {}
+    )
+    if status:
+        query["status"] = status
+    return list(
+        collection.find(query, {"_id": 0})
+        .sort("createdAt", pymongo.DESCENDING)
+        .skip(offset)
+        .limit(limit)
+    )
 
 
 def get_search_query_by_id(collection: Collection, id: str):
@@ -30,6 +52,7 @@ def add_search_query(collection: Collection, search_query: dict):
         raise HTTPException(status_code=422, detail="Search query already exists")
     id = uuid.uuid4().hex
     search_query["id"] = id
+    search_query = SearchQuerySchema(**search_query).model_dump()
     collection.insert_one(search_query)
 
     return search_query
@@ -50,6 +73,18 @@ def delete_search_query(collection: Collection, id: str):
         raise HTTPException(status_code=404, detail="Search query not found")
 
     result = collection.delete_one({"id": id})
+    return result.deleted_count
+
+
+def delete_search_queries(collection: Collection, search_ids: List[str]):
+    # Check if all games exist before deleting
+    for search_id in search_ids:
+        if not exists_search_query_by_id(collection, search_id):
+            raise HTTPException(
+                status_code=404, detail=f"Video game with id {search_id} not found"
+            )
+
+    result = collection.delete_many({"id": {"$in": search_ids}})
     return result.deleted_count
 
 

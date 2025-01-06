@@ -183,3 +183,5 @@ data/
 
 # vscode setting
 .vscode
+proxies.json
+cookies.txt

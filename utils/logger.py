@@ -3,13 +3,16 @@ import logging
 # export only follow loggers
 __all__ = ['scrapping_logger', 'download_logger', 'request_logger']
 
+# log file dir
+BASE_LOGGING_DIR = "logging"
+
 # ---------------------------------- Youtube Video Scrapper Logger ----------------------------------
 download_logger = logging.getLogger("youtube_video_downloader")
 download_logger.setLevel(logging.INFO)
 
 # Create a file handler
-download_handler = logging.FileHandler("download.log")
-download_handler.setLevel(logging.INFO)
+download_handler = logging.FileHandler(f"{BASE_LOGGING_DIR}/download.log")
+download_handler.setLevel(logging.ERROR)
 # Create a logging format
 download_formatter = logging.Formatter(
     "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -28,8 +31,8 @@ download_logger.addHandler(downalod_console_handler)
 scrapping_logger = logging.getLogger("youtube_video_scrapper")
 scrapping_logger.setLevel(logging.INFO)
 # Create a file handler
-scrap_handler = logging.FileHandler("scrapping.log")
-scrap_handler.setLevel(logging.INFO)
+scrap_handler = logging.FileHandler(f"{BASE_LOGGING_DIR}/scrapping.log")
+scrap_handler.setLevel(logging.ERROR)
 # Create a logging format
 scrap_formatter = logging.Formatter(
     "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
@@ -48,8 +51,8 @@ scrapping_logger.addHandler(scrap_console_handler)
 request_logger = logging.getLogger("reqeust_logger")
 request_logger.setLevel(logging.INFO)
 # Create a file handler
-request_file_handler = logging.FileHandler("request.log")
-request_file_handler.setLevel(logging.INFO)
+request_file_handler = logging.FileHandler(f"{BASE_LOGGING_DIR}/request.log")
+request_file_handler.setLevel(logging.ERROR)
 # Create a logging format
 request_file_formatter = logging.Formatter(
     "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

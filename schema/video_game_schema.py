@@ -20,7 +20,7 @@ class VideoGameUpdateSchema(BaseModel):
 
 
 class VideoGameSchema(VideoGameBaseSchema):
-    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
     pass
 
 

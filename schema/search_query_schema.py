@@ -17,9 +17,9 @@ class SearchQueryCreateSchema(SearchQueryBaseSchema):
 
 class SearchQuerySchema(SearchQueryBaseSchema):
     id: str
-    dmlAt: datetime = Field(default_factory=datetime.utcnow)
-    dmlType: SEARCH_QUERY_STATUS = Field(default=SEARCH_QUERY_STATUS.PENDING)
-    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    dml_at: datetime = Field(default_factory=datetime.utcnow)
+    dml_type: SEARCH_QUERY_STATUS = Field(default=SEARCH_QUERY_STATUS.PENDING)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
 
 
 class SearchQueryUpdateSchema(SearchQueryBaseSchema):

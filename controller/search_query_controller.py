@@ -25,7 +25,7 @@ def list_search_queries(
         query["status"] = status
     return list(
         collection.find(query, {"_id": 0})
-        .sort("createdAt", pymongo.DESCENDING)
+        .sort("created_at", pymongo.DESCENDING)
         .skip(offset)
         .limit(limit)
     )

@@ -10,7 +10,7 @@ def get_all_video_games(collection: Collection, offset: int, limit: int, title: 
     query = {"title": {"$regex": f".*{title}.*", "$options": "i"}} if title else {}
     return list(
         collection.find(query, {"_id": 0})
-        .sort("createdAt", pymongo.DESCENDING)
+        .sort("created_at", pymongo.DESCENDING)
         .skip(offset)
         .limit(limit)
     )

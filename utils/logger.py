@@ -1,5 +1,8 @@
 import logging
 
+# export only follow loggers
+__all__ = ['scrapping_logger', 'download_logger', 'request_logger']
+
 # ---------------------------------- Youtube Video Scrapper Logger ----------------------------------
 download_logger = logging.getLogger("youtube_video_downloader")
 download_logger.setLevel(logging.INFO)
@@ -25,7 +28,7 @@ download_logger.addHandler(downalod_console_handler)
 scrapping_logger = logging.getLogger("youtube_video_scrapper")
 scrapping_logger.setLevel(logging.INFO)
 # Create a file handler
-scrap_handler = logging.FileHandler("scrap.log")
+scrap_handler = logging.FileHandler("scrapping.log")
 scrap_handler.setLevel(logging.INFO)
 # Create a logging format
 scrap_formatter = logging.Formatter(
@@ -40,3 +43,23 @@ scrap_console_handler = logging.StreamHandler()
 scrap_console_handler.setLevel(logging.INFO)
 scrap_console_handler.setFormatter(scrap_formatter)
 scrapping_logger.addHandler(scrap_console_handler)
+
+# ---------------------------------- Request Logger ----------------------------------
+request_logger = logging.getLogger("reqeust_logger")
+request_logger.setLevel(logging.INFO)
+# Create a file handler
+request_file_handler = logging.FileHandler("request.log")
+request_file_handler.setLevel(logging.INFO)
+# Create a logging format
+request_file_formatter = logging.Formatter(
+    "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+request_file_handler.setFormatter(request_file_formatter)
+# Add the handlers to the request_logger
+request_logger.addHandler(request_file_handler)
+
+# Create a stream handler for console output
+request_console_handler = logging.StreamHandler()
+request_console_handler.setLevel(logging.INFO)
+request_console_handler.setFormatter(request_file_formatter)
+request_logger.addHandler(request_console_handler)

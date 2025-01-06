@@ -31,13 +31,14 @@ class VideoScrapper:
             "proxy": random.choice(cls._proxies) if cls._proxies else None,
         }
 
-        video_urls = []
+        video_urls = None
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             try:
                 info = ydl.extract_info(url=search_query, download=False)
                 video_urls = cls.extract_all_video_urls(info)
             except Exception as e:
-                print(e)
+                scrapping_logger.error("Error in scrapping_video_urls_with_search_quer %s. Error: %s", search_query, e)
+                return None
 
         return video_urls
 

@@ -10,10 +10,10 @@ def http_add_ingress_video(data):
         response = requests.post(url, json=data, headers=headers)
         if response.status_code == 200:
             return response.json()["data"]
-        request_logger.error("Error in http_add_ingress", response.text)
+        request_logger.error("Error in http_add_ingress: %s", response.text)
         return None
     except Exception as e:
-        request_logger.error("Error in http_add_ingress", e)
+        request_logger.error("Error in http_add_ingress: %s", e)
         return None
 
 def http_update_ingress_video(data):
@@ -24,7 +24,7 @@ def http_update_ingress_video(data):
         if response.status_code == 200:
             return response.json()["data"]
         else:
-            request_logger.error("Error in http_update_ingress", response.text)
+            request_logger.error("Error in http_update_ingress: %s", response.text)
             return None
     except Exception as e:
         request_logger.error("Error in http_update_ingress: %s", e)

@@ -6,6 +6,8 @@ from enums import INGRESS_VIDEO_STATUS
 
 class IngressVideoBaseSchema(BaseModel):
     video_id: str
+    channel_id: str
+    channel_url: str
     file_hash: str
     file_path: str
     video_url: str
@@ -20,11 +22,12 @@ class IngressVideoBaseSchema(BaseModel):
     transferred: bool
     status: INGRESS_VIDEO_STATUS = Field(default=INGRESS_VIDEO_STATUS.PENDING)
     game_id: str
-    upload_date: str
-
+    
 
 class IngressVideoUpdateSchema(IngressVideoBaseSchema):
     video_id: str
+    channel_id: Optional[str] = Field(default=None)
+    channel_url: Optional[str] = Field(default=None)
     file_hash: Optional[str] = Field(default=None)
     file_path: Optional[str] = Field(default=None)
     video_url: Optional[str] = Field(default=None)
@@ -39,8 +42,6 @@ class IngressVideoUpdateSchema(IngressVideoBaseSchema):
     transferred: Optional[bool] = Field(default=None)
     status: INGRESS_VIDEO_STATUS = Field(default=None)
     game_id: Optional[str] = Field(default=None)
-    upload_date: Optional[str] = Field(default=None)
-    failed_reasons: Optional[str] = Field(default=None)
 
 
 class IngressVideoCreateSchema(IngressVideoBaseSchema):
@@ -48,5 +49,7 @@ class IngressVideoCreateSchema(IngressVideoBaseSchema):
 
 
 class IngressVideoSchema(IngressVideoBaseSchema):
-    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    dml_at: Optional[datetime] = Field(default=None)
+    dml_type: Optional[INGRESS_VIDEO_STATUS] = Field(default=None)
+    created_at: datetime = Field(default_factory=datetime.utcnow)
     pass

@@ -31,7 +31,13 @@ class VideoScrappingWorker:
                 http_update_query(pending_query)
 
                 for video_url in extracted_video_urls:
-                    video_metadata = VideoScrapper.get_video_metadata(video_url)
+                    try:
+                        video_metadata = VideoScrapper.get_video_metadata(video_url)
+                    except Exception as e:
+                        # if scrapper faced the error - "Sign in to confirm you're not a bot", will update the status to failed
+                        # and will break the loop
+                        pending_query["status"] = SEARCH_QUERY_STATUS.FAILED
+                        break
 
                     if video_metadata:
                         # If extracting video metadata is not None, it will add the video metadata to the database
@@ -39,17 +45,13 @@ class VideoScrappingWorker:
                         video_metadata["game_id"] = pending_query["game_id"]
                         http_add_ingress_video(video_metadata)
 
-                    else:
-                        # If extracting video metadata is None, it will update the status to failed and break the loop
-                        pending_query["status"] = SEARCH_QUERY_STATUS.FAILED
-                        http_update_query(pending_query)
-                        break
-
                     # sleep for 3 seconds to allow the scrippint to avoid blocking from youtube
                     await asyncio.sleep(3)
                 
                 if pending_query["status"] == SEARCH_QUERY_STATUS.EXTRACTING:
                     pending_query["status"] = SEARCH_QUERY_STATUS.EXTRACTED
+                    http_update_query(pending_query)
+                elif pending_query["status"] == SEARCH_QUERY_STATUS.FAILED:
                     http_update_query(pending_query)
         else:
             scrapping_logger.info(f"There is no pending query, will sleep for {self.fetch_interval} seconds...")

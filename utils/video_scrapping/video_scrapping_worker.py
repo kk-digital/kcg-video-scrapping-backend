@@ -18,7 +18,7 @@ class VideoScrappingWorker:
     async def process_pending_downloads(self):
         pending_queries = http_get_pending_query()
 
-        if len(pending_queries) > 0:
+        if pending_queries and len(pending_queries) > 0:
             for pending_query in pending_queries:
                 query = pending_query["query"]
                 extracted_video_urls = VideoScrapper.scrapping_video_urls_with_search_query(query)

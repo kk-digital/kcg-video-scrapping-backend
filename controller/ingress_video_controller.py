@@ -50,7 +50,7 @@ def update_ingress_video(collection: Collection, ingress_video: dict):
     # update dml_type nad dml_at
     if ingress_video.get("status") is not None:
         ingress_video["dml_at"] = datetime.utcnow()
-        ingress_video["dml_type"] = datetime["status"]
+        ingress_video["dml_type"] = ingress_video["status"]
     
     return collection.update_one(
         {"video_id": ingress_video["video_id"]}, {"$set": ingress_video}

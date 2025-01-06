@@ -67,7 +67,7 @@ def update_search_query(collection: Collection, search_query: dict):
     # update dml_type nad dml_at
     if search_query.get("status") is not None:
         search_query["dml_at"] = datetime.utcnow()
-        search_query["dml_type"] = datetime["status"]
+        search_query["dml_type"] = search_query["status"]
 
     return collection.update_one({"id": search_query["id"]}, {"$set": search_query})
 

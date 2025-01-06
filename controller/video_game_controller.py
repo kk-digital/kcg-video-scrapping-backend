@@ -48,7 +48,7 @@ def update_video_game(collection: Collection, video_game: dict):
     # update dml_type nad dml_at
     if video_game.get("status") is not None:
         video_game["dml_at"] = datetime.utcnow()
-        video_game["dml_type"] = datetime["status"]
+        video_game["dml_type"] = video_game["status"]
 
     return collection.update_one(
         {"game_id": video_game["game_id"]}, {"$set": video_game}

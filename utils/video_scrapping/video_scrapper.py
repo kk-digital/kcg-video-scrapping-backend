@@ -91,16 +91,19 @@ class VideoScrapper:
             "channel_id": data.get("channel_id", ""),
             "channel_url": data.get("channel_url", ""),
             "video_id": data.get("id", ""),
+            "file_hash": "",
+            "file_path": "",
             "video_url": f"https://www.youtube.com/watch?v={data.get('id', '')}",
             "video_title": data.get("title", ""),
             "video_description": data.get("description", ""),
+            "video_resolution": data.get("height", "") + "p", # ex. 720p
             "video_extension": data.get("ext", ""),
-            "video_length": data.get("duration", ""),
+            "video_length": data.get("duration", 0),
             "video_filesize": (
                 data.get("filesize")
                 if data.get("filesize") is not None
                 else data.get("filesize_approx", 0)
             ),
-            "video_frame_rate": data.get("fps", ""),
+            "video_frame_rate": data.get("fps", 0),
             "video_language": data.get("language", ""),
         }

@@ -1,4 +1,5 @@
 import yt_dlp
+from yt_dlp.utils import DownloadError
 import random
 
 import sys
@@ -7,7 +8,6 @@ sys.path.insert(0, "./")
 
 from config import COOKIES_PATH
 from utils.logger import scrapping_logger
-
 
 class VideoScrapper:
     _proxies = None
@@ -68,7 +68,7 @@ class VideoScrapper:
     @classmethod
     def get_video_metadata(cls, video_url):
         ydl_opts = {
-            "cookies": COOKIES_PATH, # Download with cookie
+            "cookiefile": COOKIES_PATH, # Download with cookie
             "quiet": True,  # Suppress output
             "proxy": random.choice(cls._proxies) if cls._proxies else None, # Rotate proxy
             "extract_flat": True,  # Extract metadata only, do not download videos

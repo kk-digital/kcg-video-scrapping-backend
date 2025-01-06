@@ -23,7 +23,7 @@ async def list_ingress_videos(
     request: Request,
     offset: int = Query(default=0),
     limit: int = Query(default=20),
-    status: Optional[str] = Query(default=None),
+    status: Optional[INGRESS_VIDEO_STATUS] = Query(default=None),
     title: Optional[str] = Query(default=None),
 ):
     if offset < 0:

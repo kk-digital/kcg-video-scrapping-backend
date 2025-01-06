@@ -62,6 +62,7 @@ class VideoScrapper:
     @classmethod
     def get_video_url(cls, data: dict):
         url = data.get("url", None)
+        # If the url is for youtube short video, it will return None
         if "short" in url:
             url = None
         return url
@@ -75,6 +76,7 @@ class VideoScrapper:
             "extract_flat": True,  # Extract metadata only, do not download videos
             "format": "bv[height=720][fps=60]/bv[height=720][fps=30]",
         }
+
         video_metadata = None
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             try:
@@ -82,7 +84,11 @@ class VideoScrapper:
                 video_metadata = cls.extract_video_metadata(info)
             except Exception as e:
                 scrapping_logger.error("Error in get_video_metadata: %s", e)
-                video_metadata = None
+                if "Sign in to confirm you’re not a bot" in str(e):
+                    # if scrapper faced the error - "Sign in to confirm you’re not a bot", will raise the exception
+                    # it means that the ip is blocked by youtube, cookie is expired or etc
+                    raise Exception("Sign in to confirm you’re not a bot")
+
         return video_metadata
 
     @classmethod
@@ -97,7 +103,7 @@ class VideoScrapper:
             "video_url": f"https://www.youtube.com/watch?v={data.get('id', '')}",
             "video_title": data.get("title", ""),
             "video_description": data.get("description", ""),
-            "video_resolution": data.get("height", "") + "p", # ex. 720p
+            "video_resolution": "{}p".format(data.get("height", "")), # ex. 720p
             "video_extension": data.get("ext", ""),
             "video_length": data.get("duration", 0),
             "video_filesize": (

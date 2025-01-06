@@ -24,3 +24,10 @@ with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.extract_info(url=url, download=True)
     except Exception as e:
         print(f"Error in downloading {url}: {e}")
+
+# Note: if this script is not working well, you have to change cookie
+# or user agent. And you have to check yt-dlp library documentation to ensure
+# that you are using the correct options if policy of youtube changed.
+# https://github.com/yt-dlp/yt-dlp
+# https://github.com/coletdjnz/yt-dlp-youtube-oauth2
+# https://github.com/yt-dlp/yt-dlp/wiki/Extractors#logging-in-with-oauth

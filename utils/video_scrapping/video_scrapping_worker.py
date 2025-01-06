@@ -17,7 +17,6 @@ class VideoScrappingWorker:
 
     async def process_pending_downloads(self):
         pending_queries = http_get_pending_query()
-
         if pending_queries and len(pending_queries) > 0:
             for pending_query in pending_queries:
                 query = pending_query["query"]
@@ -27,14 +26,17 @@ class VideoScrappingWorker:
                     video_metadata = VideoScrapper.get_video_metadata(video_url)
 
                     if video_metadata:
+                        # If extracting video metadata is not None, it will add the video metadata to the database
+                        # and update the status to extracted
                         video_metadata["game_id"] = pending_query["game_id"]
                         http_add_ingress_video(video_metadata)
                         pending_query["status"] = SEARCH_QUERY_STATUS.EXTRACTED
+                        http_update_query(pending_query)
                     else:
+                        # If extracting video metadata is None, it will update the status to failed and break the loop
                         pending_query["status"] = SEARCH_QUERY_STATUS.FAILED
-
-                    # update search query as extracted
-                    http_update_query(pending_query)
+                        http_update_query(pending_query)
+                        break
                     
                     # sleep for 3 seconds to allow the scrippint to avoid blocking from youtube
                     await asyncio.sleep(3)

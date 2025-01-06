@@ -10,10 +10,10 @@ def http_add_ingress_video(data):
         response = requests.post(url, json=data, headers=headers)
         if response.status_code == 200:
             return response.json()["data"]
-        request_logger("Error in http_add_ingress", response.text)
+        request_logger.error("Error in http_add_ingress", response.text)
         return None
     except Exception as e:
-        request_logger("Error in http_add_ingress", e)
+        request_logger.error("Error in http_add_ingress", e)
         return None
 
 def http_update_ingress_video(data):
@@ -24,10 +24,10 @@ def http_update_ingress_video(data):
         if response.status_code == 200:
             return response.json()["data"]
         else:
-            request_logger("Error in http_update_ingress", response.text)
+            request_logger.error("Error in http_update_ingress", response.text)
             return None
     except Exception as e:
-        request_logger("Error in http_update_ingress: %s", e)
+        request_logger.error("Error in http_update_ingress: %s", e)
         return None
 
 
@@ -38,10 +38,10 @@ def http_get_pending_ingress_videos(offset: int = 0, limit: int = 1):
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
             return response.json()["data"]
-        request_logger("Error in http_get_pending_ingress_videos: %s", response.text)
+        request_logger.error("Error in http_get_pending_ingress_videos: %s", response.text)
         return None
     except Exception as e:
-        request_logger("Error in http_get_pending_ingress_videos: %s", e)
+        request_logger.error("Error in http_get_pending_ingress_videos: %s", e)
         return None
 
 def http_update_query(data):
@@ -51,10 +51,10 @@ def http_update_query(data):
         response = requests.put(url, headers=headers, json=data)
         if response.status_code == 200:
             return response.json()["data"]
-        request_logger("Error in http_update_query: %s", response.text)
+        request_logger.error("Error in http_update_query: %s", response.text)
         return None
     except Exception as e:
-        request_logger("Error in http_update_query: %s", e)
+        request_logger.error("Error in http_update_query: %s", e)
         return None
 
 
@@ -65,8 +65,8 @@ def http_get_pending_query(offset: int = 0, limit: int = 10):
         response = requests.get(url, headers=headers)
         if response.status_code == 200:
             return response.json()["data"]
-        request_logger("Error in http_get_pending_query: %s", response.text)
+        request_logger.error("Error in http_get_pending_query: %s", response.text)
         return None
     except Exception as e:
-        request_logger("Error in http_get_pending_query: %s", e)
+        request_logger.error("Error in http_get_pending_query: %s", e)
         return None

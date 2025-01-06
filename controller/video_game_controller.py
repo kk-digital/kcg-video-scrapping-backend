@@ -1,4 +1,5 @@
 from typing import List
+from datetime import datetime
 from fastapi import HTTPException
 import pymongo
 from pymongo.collection import Collection
@@ -44,6 +45,10 @@ def update_video_game(collection: Collection, video_game: dict):
 
     # remove key in which value is None
     video_game = {k: v for k, v in video_game.items() if v is not None}
+    # update dml_type nad dml_at
+    if video_game.get("status") is not None:
+        video_game["dml_at"] = datetime.utcnow()
+        video_game["dml_type"] = datetime["status"]
 
     return collection.update_one(
         {"game_id": video_game["game_id"]}, {"$set": video_game}

@@ -64,6 +64,10 @@ def update_search_query(collection: Collection, search_query: dict):
 
     # remove key in which value is None
     search_query = {k: v for k, v in search_query.items() if v is not None}
+    # update dml_type nad dml_at
+    if search_query.get("status") is not None:
+        search_query["dml_at"] = datetime.utcnow()
+        search_query["dml_type"] = datetime["status"]
 
     return collection.update_one({"id": search_query["id"]}, {"$set": search_query})
 

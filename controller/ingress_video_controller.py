@@ -1,4 +1,5 @@
 from typing import Optional
+from datetime import datetime
 from fastapi import HTTPException
 from pymongo.collection import Collection
 
@@ -46,7 +47,11 @@ def update_ingress_video(collection: Collection, ingress_video: dict):
 
     # remove key in which value is None
     ingress_video = {k: v for k, v in ingress_video.items() if v is not None}
-
+    # update dml_type nad dml_at
+    if ingress_video.get("status") is not None:
+        ingress_video["dml_at"] = datetime.utcnow()
+        ingress_video["dml_type"] = datetime["status"]
+    
     return collection.update_one(
         {"video_id": ingress_video["video_id"]}, {"$set": ingress_video}
     )

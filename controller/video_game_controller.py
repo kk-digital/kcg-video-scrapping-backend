@@ -21,7 +21,7 @@ def get_video_game_by_game_id(collection: Collection, game_id: str):
     result = collection.find_one({"game_id": game_id}, {"_id": 0})
 
     if result is None:
-        raise HTTPException(status_code=404, detail="Video game not found")
+        raise HTTPException(status_code=404, detail=f"Video game not found. game_id: {game_id}")
 
     return dict(result)
 
@@ -32,7 +32,7 @@ def get_video_games_count(collection: Collection):
 
 def add_video_game(collection: Collection, video_game: dict):
     if exists_video_game_by_game_id(collection, video_game["game_id"]):
-        raise HTTPException(status_code=422, detail="Video game already exists")
+        raise HTTPException(status_code=422, detail=f"Video game already exists. game_id: {video_game['game_id']}")
     video_game = VideoGameSchema(**video_game).model_dump()
     collection.insert_one(video_game)
 
@@ -41,7 +41,7 @@ def add_video_game(collection: Collection, video_game: dict):
 
 def update_video_game(collection: Collection, video_game: dict):
     if not exists_video_game_by_game_id(collection, video_game["game_id"]):
-        raise HTTPException(status_code=404, detail="Video game not found")
+        raise HTTPException(status_code=404, detail=f"Video game not found. game_id: {video_game['game_id']}")
 
     # remove key in which value is None
     video_game = {k: v for k, v in video_game.items() if v is not None}
@@ -57,7 +57,7 @@ def update_video_game(collection: Collection, video_game: dict):
 
 def delete_video_game(collection: Collection, game_id: str):
     if not exists_video_game_by_game_id(collection, game_id):
-        raise HTTPException(status_code=404, detail="Video game not found")
+        raise HTTPException(status_code=404, detail=f"Video game not found. game_id: {game_id}")
 
     return collection.delete_one({"game_id": game_id})
 

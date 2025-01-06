@@ -26,14 +26,14 @@ def get_ingress_video_by_video_id(collection: Collection, video_id: str):
     result = collection.find_one({"video_id": video_id}, {"_id": 0})
 
     if result is None:
-        raise HTTPException(status_code=404, detail="Ingress video not found")
+        raise HTTPException(status_code=404, detail=f"Ingress video not found. video_id: {video_id}")
 
     return dict(result)
 
 
 def add_ingress_video(collection: Collection, ingress_video: dict):
     if exists_ingress_video(collection, ingress_video["video_id"]):
-        raise HTTPException(status_code=422, detail="Ingress video already exists")
+        raise HTTPException(status_code=422, detail=f"Ingress video already exists. video_id: {ingress_video['video_id']}")
     ingress_video = IngressVideoSchema(**ingress_video).model_dump()
 
     collection.insert_one(ingress_video)
@@ -43,7 +43,7 @@ def add_ingress_video(collection: Collection, ingress_video: dict):
 
 def update_ingress_video(collection: Collection, ingress_video: dict):
     if not exists_ingress_video(collection, ingress_video["video_id"]):
-        raise HTTPException(status_code=404, detail="Ingress video not found")
+        raise HTTPException(status_code=404, detail=f"Ingress video not found. video_id: {ingress_video['video_id']}")
 
     # remove key in which value is None
     ingress_video = {k: v for k, v in ingress_video.items() if v is not None}
@@ -59,7 +59,7 @@ def update_ingress_video(collection: Collection, ingress_video: dict):
 
 def delete_ingress_video(collection: Collection, video_id: str):
     if not exists_ingress_video(collection, video_id):
-        raise HTTPException(status_code=404, detail="Ingress video not found")
+        raise HTTPException(status_code=404, detail=f"Ingress video not found. video_id: {video_id}")
 
     return collection.delete_one({"video_id": video_id})
 

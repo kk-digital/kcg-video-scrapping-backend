@@ -5,6 +5,7 @@ import sys
 
 sys.path.insert(0, "./")
 
+from config import COOKIES_PATH
 from utils.logger import scrapping_logger
 
 
@@ -58,7 +59,7 @@ class VideoScrapper:
         return all_video_urls
 
     @classmethod
-    def get_video_url(data: dict):
+    def get_video_url(cls, data: dict):
         url = data.get("url", None)
         if "short" in url:
             url = None
@@ -67,12 +68,13 @@ class VideoScrapper:
     @classmethod
     def get_video_metadata(cls, video_url):
         ydl_opts = {
+            "cookies": COOKIES_PATH, # Download with cookie
             "quiet": True,  # Suppress output
-            "proxy": random.choice(cls._proxies) if cls._proxies else None,
+            "proxy": random.choice(cls._proxies) if cls._proxies else None, # Rotate proxy
             "extract_flat": True,  # Extract metadata only, do not download videos
             "format": "bv[height=720][fps=60]/bv[height=720][fps=30]",
         }
-
+        video_metadata = None
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
             try:
                 info = ydl.extract_info(url=video_url, download=False)
@@ -80,9 +82,10 @@ class VideoScrapper:
             except Exception as e:
                 scrapping_logger.error("Error in get_video_metadata: %s", e)
                 video_metadata = None
+        return video_metadata
 
     @classmethod
-    def extract_video_metadata(data):
+    def extract_video_metadata(cls, data):
         # return necessary value from video object
         return {
             "channel_id": data.get("channel_id", ""),

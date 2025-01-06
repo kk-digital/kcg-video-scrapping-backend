@@ -47,7 +47,7 @@ async def shutdown_db_client() -> None:
 
 
 async def shutdown():
-    shutdown_db_client()
+    await shutdown_db_client()
     if hasattr(app, "download_worker_process"):
         app.download_worker_process.terminate()
         app.download_worker_process.join()

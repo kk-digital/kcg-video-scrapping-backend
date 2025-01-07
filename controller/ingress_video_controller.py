@@ -73,3 +73,4 @@ def get_ingress_videos_count(collection: Collection, status: Optional[str] = Non
         return collection.count_documents({})
     else:
         return collection.count_documents({"status": status})
+       

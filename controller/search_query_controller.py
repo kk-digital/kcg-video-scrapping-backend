@@ -60,7 +60,7 @@ def add_search_query(collection: Collection, search_query: dict):
 
 def update_search_query(collection: Collection, search_query: dict):
     if not exists_search_query_by_id(collection, search_query["id"]):
-        raise HTTPException(status_code=404, detail=f"Search query not found. search_query_id: {search_query["id"]}")
+        raise HTTPException(status_code=404, detail=f"Search query not found. search_query_id: {search_query['id']}")
 
     # remove key in which value is None
     search_query = {k: v for k, v in search_query.items() if v is not None}

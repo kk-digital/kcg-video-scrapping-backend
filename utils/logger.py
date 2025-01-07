@@ -1,11 +1,12 @@
 import logging
+import os
 
 # export only follow loggers
 __all__ = ['scrapping_logger', 'download_logger', 'request_logger']
 
 # log file dir
 BASE_LOGGING_DIR = "logging"
-
+os.makedirs(BASE_LOGGING_DIR, exist_ok=True)
 # ---------------------------------- Youtube Video Scrapper Logger ----------------------------------
 download_logger = logging.getLogger("youtube_video_downloader")
 download_logger.setLevel(logging.INFO)

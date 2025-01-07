@@ -185,3 +185,4 @@ data/
 .vscode
 proxies.json
 cookies.txt
+logging

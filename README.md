@@ -35,7 +35,7 @@ mongod --version
 ## Run the application
 
 ```
-uvicorn main:app --reload --port 9000
+dotenv -f  .env run  uvicorn main:app --reload --port 9000
 ```
 
 # Preference 

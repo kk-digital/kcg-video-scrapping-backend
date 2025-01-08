@@ -9,7 +9,7 @@ from utils.logger import download_logger
 
 
 class VideoDownloader:
-    _output_dir = None
+    _output_dir = "output"
     _proxies = None
 
     @property

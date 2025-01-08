@@ -4,8 +4,14 @@
 
 ```
 sudo apt update
+sudo apt install python3.10
 sudo apt install -y python3-pip
 sudo apt install -y python3-venv
+```
+
+Note: If you want to set the newly installed version as the default Python version, you can update the alternatives:
+```
+sudo update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.10 1
 ```
 
 ## Create virtual environment
@@ -35,10 +41,20 @@ mongod --version
 ## Run the application
 
 ```
+pip install python-dotenv[cli]
 dotenv -f  .env run  uvicorn main:app --reload --port 9000
 ```
 
 # Preference 
+
+## Setup Firfox
+
+```
+sudo apt update
+sudo apt install firefox
+sudo ln -s /opt/firefox/firefox /usr/bin/firefox // Create a Symlink: 
+ 
+```
 
 ## Setup yt-dlp library
 

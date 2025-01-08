@@ -1,7 +1,12 @@
 import asyncio
 from multiprocessing import Process
 
-from utils.http.requests import http_get_pending_query, http_update_query, http_add_ingress_video
+from utils.http.requests import (
+    http_get_pending_query, 
+    http_update_query, 
+    http_add_ingress_video,
+    http_get_extracting_query
+)
 from utils.video_scrapping.video_scrapper import VideoScrapper
 from utils.logger import scrapping_logger
 
@@ -16,7 +21,8 @@ class VideoScrappingWorker:
         VideoScrapper.proxies = PROXIES
 
     async def process_pending_queries(self):
-        pending_queries = http_get_pending_query()
+        extracting_queries = http_get_extracting_query()
+        pending_queries = http_get_pending_query() if not extracting_queries else extracting_queries
         if pending_queries and len(pending_queries) > 0:
             for pending_query in pending_queries:
                 query = pending_query["query"]

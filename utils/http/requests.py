@@ -83,3 +83,16 @@ def http_get_extracting_query(offset: int = 0, limit: int = 10):
     except Exception as e:
         request_logger.error("Error in http_get_pending_query: %s", e)
         return None
+    
+def http_check_existence_videos(video_ids: list):
+    url = f"{BASE_ENDPOINT_URL}/api/v1/ingress-videos/check-existence"
+    headers = {"Content-Type": "application/json"}
+    try:
+        response = requests.post(url, json={"ids": video_ids}, headers=headers)
+        if response.status_code == 200:
+            return response.json()["data"]
+        request_logger.error("Error in http_check_existence_videos: %s", response.text)
+        return None
+    except Exception as e:
+        request_logger.error("Error in http_check_existence_videos: %s", e)
+        return None

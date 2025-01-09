@@ -6,6 +6,8 @@ from schema.ingress_video_schema import (
     IngressVideoCreateSchema,
     IngressVideoSchema,
     IngressVideoUpdateSchema,
+    IngressVideoIdsSchema,
+    IngressVideoIdsExistenceResultSchema,
 )
 from controller import ingress_video_controller
 from schema.response_schema import ResponseSchema
@@ -59,7 +61,6 @@ async def get_ingress_videos_count(request: Request, status: str = Query(default
     count = ingress_video_controller.get_ingress_videos_count(
         request.app.ingress_video_collection, status
     )
-    print("1234567890", count)
     return ResponseSchema(success=True, data=count)
 
 
@@ -78,6 +79,20 @@ async def add_ingress_video(request: Request, ingress_video: IngressVideoCreateS
         message="Ingress video added successfully",
         data=added_ingress_video,
     )
+
+
+@router.post(
+    "/check-existence",
+    status_code=200,
+    description="Get unexisted video ids",
+    response_model=ResponseSchema[IngressVideoIdsExistenceResultSchema]
+)
+async def check_existence(request: Request, video_ids: IngressVideoIdsSchema):
+    result = ingress_video_controller.check_existence(
+        request.app.ingress_video_collection, video_ids.ids
+    )
+    return ResponseSchema(success=True, data=result)
+    
 
 
 @router.put(

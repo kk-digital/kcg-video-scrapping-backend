@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from datetime import datetime
 from fastapi import HTTPException
 from pymongo.collection import Collection
@@ -29,6 +29,12 @@ def get_ingress_video_by_video_id(collection: Collection, video_id: str):
         raise HTTPException(status_code=404, detail=f"Ingress video not found. video_id: {video_id}")
 
     return dict(result)
+
+def check_existence(collection: Collection, video_ids: List[str]):
+    result = list(collection.find({"video_id": {"$in": video_ids}}, {"_id": 0}))
+    existed_video_ids = [video["video_id"] for video in result]
+    unexisted_video_ids = list(set(video_ids) - set(existed_video_ids))
+    return {"existed_video_ids": existed_video_ids, "unexisted_video_ids": unexisted_video_ids}
 
 
 def add_ingress_video(collection: Collection, ingress_video: dict):

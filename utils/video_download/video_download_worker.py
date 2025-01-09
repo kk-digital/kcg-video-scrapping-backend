@@ -56,7 +56,7 @@ class VideoDownloadWorker:
 
 
 def run_worker():
-    worker = VideoDownloadWorker(fetch_interval=3)
+    worker = VideoDownloadWorker(fetch_interval=10)
     asyncio.run(worker.run())
 
 

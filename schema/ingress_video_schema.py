@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 from pydantic import BaseModel, Field
 from datetime import datetime
 from enums import INGRESS_VIDEO_STATUS
@@ -52,3 +52,10 @@ class IngressVideoSchema(IngressVideoBaseSchema):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     dml_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
     dml_type: Optional[INGRESS_VIDEO_STATUS] = Field(default=INGRESS_VIDEO_STATUS.PENDING)
+
+class IngressVideoIdsSchema(BaseModel):
+    ids: List[str] = Field(default=[])
+
+class IngressVideoIdsExistenceResultSchema(BaseModel):
+    existed_video_ids: List[str] = Field(default=[])
+    unexisted_video_ids: List[str] = Field(default=[])

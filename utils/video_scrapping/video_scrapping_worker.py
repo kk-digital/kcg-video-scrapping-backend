@@ -24,10 +24,9 @@ class VideoScrappingWorker:
         VideoScrapper.proxies = PROXIES
 
     async def process_pending_queries(self):
-        extracting_queries = http_get_extracting_query()
-        pending_queries = http_get_pending_query() if not extracting_queries else extracting_queries
-        if pending_queries and len(pending_queries) > 0:
-            for pending_query in pending_queries:
+        queries_to_process = http_get_extracting_query() or http_get_pending_query() or []
+        if queries_to_process and len(queries_to_process) > 0:
+            for pending_query in queries_to_process:
                 query = pending_query["query"]
                 extracted_video_urls = VideoScrapper.scrapping_video_urls_with_search_query(query)
                 total_count_video_urls = len(extracted_video_urls)

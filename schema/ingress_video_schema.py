@@ -19,12 +19,13 @@ class IngressVideoBaseSchema(BaseModel):
     video_filesize: int
     video_frame_rate: int
     video_language: Optional[str]
+    failed_reason: Optional[str] = Field(default=None)
     game_id: str
     transferred: bool = Field(default=False)
     status: INGRESS_VIDEO_STATUS = Field(default=INGRESS_VIDEO_STATUS.PENDING)
     
 
-class IngressVideoUpdateSchema(IngressVideoBaseSchema):
+class IngressVideoUpdateSchema(BaseModel):
     video_id: str
     channel_id: Optional[str] = Field(default=None)
     channel_url: Optional[str] = Field(default=None)
@@ -39,9 +40,10 @@ class IngressVideoUpdateSchema(IngressVideoBaseSchema):
     video_filesize: Optional[int] = Field(default=None)
     video_frame_rate: Optional[int] = Field(default=None)
     video_language: Optional[str] = Field(default=None)
+    failed_reason: Optional[str] = Field(default=None)
+    game_id: Optional[str] = Field(default=None)
     transferred: Optional[bool] = Field(default=None)
     status: INGRESS_VIDEO_STATUS = Field(default=None)
-    game_id: Optional[str] = Field(default=None)
 
 
 class IngressVideoCreateSchema(IngressVideoBaseSchema):

@@ -5,12 +5,13 @@ import sys
 
 sys.path.insert(0, "./")
 
+from config import PROXIES
 from utils.logger import download_logger
 
 
 class VideoDownloader:
     _output_dir = "output"
-    _proxies = None
+    _proxies = PROXIES
 
     @property
     def output_dir(self):
@@ -46,8 +47,6 @@ class VideoDownloader:
         }
 
         with yt_dlp.YoutubeDL(ydl_opts) as ydl:
-            try:
-                ydl.extract_info(url=url, download=True)
-            except Exception as e:
-                download_logger.error("Error in downloading %s: %s", url, e)
-                return None
+            ydl.extract_info(url=url, download=True)
+        
+        download_logger.info(f"Downloaded video {video_id} successfully")

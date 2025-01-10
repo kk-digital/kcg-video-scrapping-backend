@@ -71,7 +71,6 @@ class VideoDownloadManager:
         try:
             loop = asyncio.get_event_loop()
             progress_hook = lambda d: self._progress_hook(d, game_id, video_id)
-
             await loop.run_in_executor(
                 self._executor,
                 lambda: VideoDownloader.download_video(
@@ -83,12 +82,13 @@ class VideoDownloadManager:
                 ),
             )
         except Exception as e:
-            download_logger.error("Error in download_workder: %s", e)
-            self.mark_failed(video_id, str(e))
+            download_logger.error("Error in download_worker: %s", e)
+            await self.mark_failed(video_id, str(e))
 
     async def start_download(
         self, game_id: str, video_id: str, video_url: str, format: str
     ) -> bool:
+        download_logger.info("Starting download for video_id: %s", video_id)
         if video_id in self.active_downloads:
             download_logger.warning(
                 "Download already in progress for video_id: %s", video_id
@@ -184,7 +184,7 @@ class VideoDownloadManager:
         return self.active_downloads
 
     def get_active_downloads_count(self) -> int:
-        return len(self.active_downloads)
+        return len(self.active_downloads.keys())
 
     def get_downloading_status(self, video_id: str) -> Dict:
         """

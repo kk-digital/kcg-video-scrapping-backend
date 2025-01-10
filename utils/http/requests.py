@@ -20,7 +20,7 @@ def http_update_ingress_video(data):
     url = f"{BASE_ENDPOINT_URL}/api/v1/ingress-videos/update-ingress-video"
     headers = {"Content-Type": "application/json"}
     try:
-        response = requests.post(url, json=data, headers=headers)
+        response = requests.put(url, json=data, headers=headers)
         if response.status_code == 200:
             return response.json()["data"]
         else:

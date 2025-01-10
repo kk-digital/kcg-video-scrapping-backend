@@ -7,11 +7,11 @@ from pymongo.collection import Collection
 from schema.video_game_schema import VideoGameSchema
 
 
-def get_all_video_games(collection: Collection, offset: int, limit: int, title: str):
+def get_all_video_games(collection: Collection, offset: int, limit: int, title: str, order_by: str, is_ascending: bool):
     query = {"title": {"$regex": f".*{title}.*", "$options": "i"}} if title else {}
     return list(
         collection.find(query, {"_id": 0})
-        .sort("created_at", pymongo.DESCENDING)
+        .sort(order_by, pymongo.ASCENDING if is_ascending else pymongo.DESCENDING)
         .skip(offset)
         .limit(limit)
     )

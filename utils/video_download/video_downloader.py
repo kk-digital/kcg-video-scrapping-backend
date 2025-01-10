@@ -5,7 +5,7 @@ import sys
 
 sys.path.insert(0, "./")
 
-from config import PROXIES
+from config import COOKIES_PATH, PROXIES
 from utils.logger import download_logger
 
 
@@ -40,7 +40,8 @@ class VideoDownloader:
     ):
         ydl_opts = {
             "quiet": True,
-            "format": format,
+            "format": format, # Download proper video with format
+            "cookiefile": COOKIES_PATH, # Download with cookie
             "progress_hooks": progress_hooks,
             "outtmpl": f"{cls._output_dir}/S_{game_id}/{video_id}.%(ext)s",
             "proxy": random.choice(cls._proxies),

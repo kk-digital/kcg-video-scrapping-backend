@@ -29,6 +29,7 @@ class VideoDownloadManager:
         self.active_downloads: Dict[str, Dict] = {}
         self.download_tasks: Dict[str, asyncio.Task] = {}
         self.active_connections: Set[WebSocket] = set()
+        self.loop = asyncio.get_event_loop()  # Store the event loop
 
     async def connect_client(self, websocket: WebSocket):
         await websocket.accept()
@@ -54,32 +55,40 @@ class VideoDownloadManager:
             await self.disconnect_client(client)
 
     def _progress_hook(self, d, game_id: str, video_id: str):
+        '''
+        Hook to update progress of the download. It will be used in downloading using yt-dlp.
+        '''
         if d["status"] == "downloading":
             total_bytes = d.get("total_bytes") or d.get("total_bytes_estimate", 0)
             if total_bytes:
                 downloaded = d.get("downloaded_bytes", 0)
                 progress = int((downloaded / total_bytes) * 100)
-                self.update_progress(game_id, progress)
-        elif d["status"] == "finished":
-            self.update_progress(game_id, 100)
-        elif d["status"] == "error":
-            self.update_progress(game_id, 0)
 
-    async def download_workder(
+                # Only update progress if it has changed significantly
+                if video_id in self.active_downloads:
+                    current_progress = self.active_downloads[video_id]["progress"]
+                    if progress != current_progress and (progress % 5 == 0 or progress == 100):
+                        # Update progress asynchronously
+                        asyncio.run_coroutine_threadsafe(self.update_progress(video_id, progress), self.loop)
+
+                print(f"Downloading {video_id} {progress}%")
+        elif d["status"] == "finished":
+            asyncio.run_coroutine_threadsafe(self.update_progress(video_id, 100), self.loop)
+        elif d["status"] == "error":
+            asyncio.run_coroutine_threadsafe(self.update_progress(video_id, 0), self.loop)
+
+    async def download_worker(
         self, game_id: str, video_id: str, video_url: str, format: str
     ):
         try:
-            loop = asyncio.get_event_loop()
             progress_hook = lambda d: self._progress_hook(d, game_id, video_id)
-            await loop.run_in_executor(
-                self._executor,
-                lambda: VideoDownloader.download_video(
-                    url=video_url,
-                    video_id=video_id,
-                    game_id=game_id,
-                    format=format,
-                    progress_hooks=[progress_hook],
-                ),
+            await asyncio.to_thread(
+                VideoDownloader.download_video,
+                url=video_url,
+                video_id=video_id,
+                game_id=game_id,
+                format=format,
+                progress_hooks=[progress_hook],
             )
         except Exception as e:
             download_logger.error("Error in download_worker: %s", e)
@@ -107,9 +116,9 @@ class VideoDownloadManager:
         http_update_ingress_video(
             {"video_id": video_id, "status": INGRESS_VIDEO_STATUS.DOWNLOADINDG}
         )
-        loop = asyncio.get_event_loop()
-        task = loop.create_task(
-            self.download_workder(game_id, video_id, video_url, format)
+        
+        task = asyncio.create_task(
+            self.download_worker(game_id, video_id, video_url, format)
         )
         self.download_tasks[video_id] = task
 

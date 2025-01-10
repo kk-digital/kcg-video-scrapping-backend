@@ -1,5 +1,5 @@
 import asyncio
-from utils.http.requests import http_get_pending_ingress_videos
+from utils.http.requests import http_get_pending_ingress_videos, http_get_downloadding_ingress_videos
 from utils.video_download.video_download_manager import VideoDownloadManager
 from utils.logger import download_logger
 from multiprocessing import Process
@@ -10,14 +10,14 @@ class VideoDownloadWorker:
         self.fetch_interrval = fetch_interval
         self.download_manager = VideoDownloadManager()
         self.is_running = False
-        self.max_downloads = 4
+        self.max_downloads = 1 # Max number of videos that can be downloaded at the same time
 
     async def process_pending_downloads(self):
-        pending_videos = http_get_pending_ingress_videos()
+        videos_to_process = http_get_downloadding_ingress_videos() or http_get_pending_ingress_videos() or []
         added_downloads = 0 # Number of videos added to download
-        if pending_videos is None:
+        if videos_to_process is None:
             return
-        for video in pending_videos:
+        for video in videos_to_process:
             video_id = video["video_id"]
             game_id = video["game_id"]
             video_url = video["video_url"]
@@ -27,7 +27,6 @@ class VideoDownloadWorker:
             # and if not, add it to the download queue
             if not (self.download_manager.get_downloading_status(video_id)
                 and self.download_manager.get_active_downloads_count() < self.max_downloads):
-                download_logger.info("Starting downloading video %s", video_id)
                 await self.download_manager.start_download(
                     game_id, video_id, video_url, format
                 )

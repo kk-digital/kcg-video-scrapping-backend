@@ -3,7 +3,7 @@ from enum import Enum
 
 class INGRESS_VIDEO_STATUS(str, Enum):
     PENDING = "pending"
-    DOWNLOADINDG = "downloading"
+    DOWNLOADING = "downloading"
     DOWNLOADED = "downloaded"
     FAILED = "failed"
     CANCELED = "canceled"

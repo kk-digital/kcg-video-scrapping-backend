@@ -45,7 +45,7 @@ def http_get_pending_ingress_videos(offset: int = 0, limit: int = 1):
         return None
 
 def http_get_downloadding_ingress_videos(offset: int = 0, limit: int = 1):
-    url = f"{BASE_ENDPOINT_URL}/api/v1/ingress-videos/list-ingress-videos?status={INGRESS_VIDEO_STATUS.DOWNLOADINDG}&offset={offset}&limit={limit}"
+    url = f"{BASE_ENDPOINT_URL}/api/v1/ingress-videos/list-ingress-videos?status={INGRESS_VIDEO_STATUS.DOWNLOADING}&offset={offset}&limit={limit}"
     headers = {"Content-Type": "application/json"}
     try:
         response = requests.get(url, headers=headers)

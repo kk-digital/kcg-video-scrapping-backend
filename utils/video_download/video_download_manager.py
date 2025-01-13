@@ -115,7 +115,7 @@ class VideoDownloadManager:
 
         self.active_downloads[video_id] = download_info
         http_update_ingress_video(
-            {"video_id": video_id, "status": INGRESS_VIDEO_STATUS.DOWNLOADINDG}
+            {"video_id": video_id, "status": INGRESS_VIDEO_STATUS.DOWNLOADING}
         )
         
         task = asyncio.create_task(

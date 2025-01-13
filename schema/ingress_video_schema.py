@@ -54,6 +54,8 @@ class IngressVideoSchema(IngressVideoBaseSchema):
     created_at: datetime = Field(default_factory=datetime.utcnow)
     dml_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
     dml_type: Optional[INGRESS_VIDEO_STATUS] = Field(default=INGRESS_VIDEO_STATUS.PENDING)
+    started_at: Optional[datetime] = Field(default_factory=datetime.utcnow)
+    elpased_time: Optional[datetime] = Field(default_factory=datetime.utcnow)
 
 class IngressVideoIdsSchema(BaseModel):
     ids: List[str] = Field(default=[])

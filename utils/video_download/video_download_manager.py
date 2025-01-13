@@ -62,6 +62,7 @@ class VideoDownloadManager:
             total_bytes = d.get("total_bytes") or d.get("total_bytes_estimate", 0)
             if total_bytes:
                 downloaded = d.get("downloaded_bytes", 0)
+                elapsed_time = d.get("elapsed", 0)
                 progress = int((downloaded / total_bytes) * 100)
 
                 # Only update progress if it has changed significantly
@@ -69,13 +70,13 @@ class VideoDownloadManager:
                     current_progress = self.active_downloads[video_id]["progress"]
                     if progress != current_progress and (progress % 5 == 0 or progress == 100):
                         # Update progress asynchronously
-                        asyncio.run_coroutine_threadsafe(self.update_progress(video_id, progress), self.loop)
+                        asyncio.run_coroutine_threadsafe(self.update_progress(video_id, progress, elapsed_time), self.loop)
 
                 print(f"Downloading {video_id} {progress}%")
         elif d["status"] == "finished":
-            asyncio.run_coroutine_threadsafe(self.update_progress(video_id, 100), self.loop)
+            asyncio.run_coroutine_threadsafe(self.update_progress(video_id, 100, elapsed_time), self.loop)
         elif d["status"] == "error":
-            asyncio.run_coroutine_threadsafe(self.update_progress(video_id, 0), self.loop)
+            asyncio.run_coroutine_threadsafe(self.update_progress(video_id, 0, elapsed_time), self.loop)
 
     async def download_worker(
         self, game_id: str, video_id: str, video_url: str, format: str
@@ -142,7 +143,7 @@ class VideoDownloadManager:
                 return True
         return False
 
-    async def update_progress(self, video_id: str, progress: int):
+    async def update_progress(self, video_id: str, progress: int, elapsed_time: int):
         if video_id in self.active_downloads:
             self.active_downloads[video_id]["progress"] = progress
 
@@ -152,6 +153,7 @@ class VideoDownloadManager:
                     "type": "progress_update",
                     "video_id": video_id,
                     "progress": progress,
+                    "elapsed_time": elapsed_time,
                     "status": "downloading",
                 }
             )

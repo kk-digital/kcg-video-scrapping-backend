@@ -42,7 +42,7 @@ mongod --version
 
 ```
 pip install python-dotenv[cli]
-dotenv -f  .env run  uvicorn main:app --reload --port 9000
+dotenv -f  .env run  uvicorn main:app --reload --port 9000 --host 0.0.0.0
 ```
 
 # Preference 
@@ -108,3 +108,15 @@ cd ~/.cache/yt-dlp/youtube-oauth2
         "outtmpl": "%(title)s.%(ext)s", # download file name format
     }
     ```
+
+# TODO List
+
+```
+- tracking downloading status in real time using websocket
+- scrapping status should be sent to front-end by websocket
+- add parameter ingress video schema
+elapsed_time
+- add filter date range into ingress video, query, video game.
+- add advaned filter into ingress video: date range, video fps, size, and etc.
+- url routing with filter options
+```

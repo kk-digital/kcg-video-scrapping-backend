@@ -58,25 +58,23 @@ class VideoDownloadManager:
         '''
         Hook to update progress of the download. It will be used in downloading using yt-dlp.
         '''
-        if d["status"] == "downloading":
-            total_bytes = d.get("total_bytes") or d.get("total_bytes_estimate", 0)
-            if total_bytes:
-                downloaded = d.get("downloaded_bytes", 0)
-                elapsed_time = d.get("elapsed", 0)
-                progress = int((downloaded / total_bytes) * 100)
+        total_bytes = d.get("total_bytes") or d.get("total_bytes_estimate", 0)
+        downloaded = d.get("downloaded_bytes", 0)
+        elapsed_time = d.get("elapsed", 0)
+        progress = int((downloaded / total_bytes) * 100)
 
-                # Only update progress if it has changed significantly
-                if video_id in self.active_downloads:
-                    current_progress = self.active_downloads[video_id]["progress"]
-                    if progress != current_progress and (progress % 5 == 0 or progress == 100):
-                        # Update progress asynchronously
-                        asyncio.run_coroutine_threadsafe(self.update_progress(video_id, progress, elapsed_time), self.loop)
-
-                print(f"Downloading {video_id} {progress}%")
+        if d["status"] == "downloading" and total_bytes:
+            # Only update progress if it has changed significantly
+            if video_id in self.active_downloads:
+                current_progress = self.active_downloads[video_id]["progress"]
+                print("here", current_progress, progress)
+                if progress != current_progress and (progress - current_progress > 3 or progress == 100):
+                    self.update_progress(INGRESS_VIDEO_STATUS.DOWNLOADING, video_id, progress, elapsed_time)
         elif d["status"] == "finished":
-            asyncio.run_coroutine_threadsafe(self.update_progress(video_id, 100, elapsed_time), self.loop)
-        elif d["status"] == "error":
-            asyncio.run_coroutine_threadsafe(self.update_progress(video_id, 0, elapsed_time), self.loop)
+            self.update_progress(INGRESS_VIDEO_STATUS.DOWNLOADED, video_id, 100, elapsed_time)
+        # elif d["status"] == "error":
+            # self.update_progress(INGRESS_VIDEO_STATUS.FAILED, video_id, progress, elapsed_time)
+            
 
     async def download_worker(
         self, game_id: str, video_id: str, video_url: str, format: str
@@ -105,6 +103,9 @@ class VideoDownloadManager:
             )
             return False
 
+        # add video into active downloads
+        # it will be helpful to send downloading status into view
+        # in real time by websocket 
         download_info = {
             "game_id": game_id,
             "video_id": video_id,
@@ -112,12 +113,14 @@ class VideoDownloadManager:
             "progress": 0,
             "status": "downloading",
         }
-
         self.active_downloads[video_id] = download_info
         http_update_ingress_video(
             {"video_id": video_id, "status": INGRESS_VIDEO_STATUS.DOWNLOADING}
         )
         
+        # add download_task task to download video
+        # it will be helpful to manage to download video 
+        # like cancel, pause and resume
         task = asyncio.create_task(
             self.download_worker(game_id, video_id, video_url, format)
         )
@@ -143,50 +146,40 @@ class VideoDownloadManager:
                 return True
         return False
 
-    async def update_progress(self, video_id: str, progress: int, elapsed_time: int):
+    def update_progress(self, status: INGRESS_VIDEO_STATUS, video_id: str, progress: int, elapsed_time: int):
         if video_id in self.active_downloads:
             self.active_downloads[video_id]["progress"] = progress
 
-            # Broadcast progress update
-            await self.broadcast_status(
-                {
-                    "type": "progress_update",
-                    "video_id": video_id,
-                    "progress": progress,
-                    "elapsed_time": elapsed_time,
-                    "status": "downloading",
-                }
-            )
-
-            if progress == 100:
+            if status == INGRESS_VIDEO_STATUS.DOWNLOADED:
+                # remove download status with given video id from active_downloads
                 download_info = self.active_downloads.pop(video_id)
-                download_info["status"] = "completed"
+                # remove task from download video
+                task = self.download_tasks.pop(video_id)
+                
+                # Update the ingress video as downloaded
                 http_update_ingress_video(
-                    {"video_id": video_id, "status": INGRESS_VIDEO_STATUS.DOWNLOADED}
-                )
-                await self.broadcast_status(
-                    {"type": "download_completed", "video_id": video_id}
+                    {
+                        "video_id": video_id, 
+                        "status": INGRESS_VIDEO_STATUS.DOWNLOADED,
+                        "elapsed_time": elapsed_time,
+                        "progress": 100,
+                    }
                 )
                 download_logger.info("Download completed for video_id: %s", video_id)
-
+                
     async def mark_failed(self, video_id: str, error_message: str):
         if video_id in self.active_downloads:
+            # remove failed video from active_downloads
             download_info = self.active_downloads.pop(video_id)
-            download_info["status"] = "failed"
-            download_info["error"] = error_message
-            self.active_downloads[video_id] = download_info
+            #  remove task from download tasks
+            task = self.download_tasks.pop(video_id)
+
+            # update ingress video as failed to download
             http_update_ingress_video(
                 {
                     "video_id": video_id,
                     "status": INGRESS_VIDEO_STATUS.FAILED,
                     "failed_reason": error_message,
-                }
-            )
-            await self.broadcast_status(
-                {
-                    "type": "download_failed",
-                    "video_id": video_id,
-                    "error_message": error_message,
                 }
             )
             download_logger.error("Download failed for video_id: %s", video_id)
@@ -196,6 +189,10 @@ class VideoDownloadManager:
 
     def get_active_downloads_count(self) -> int:
         return len(self.active_downloads.keys())
+    
+    def status(self) -> bool:
+        if self.get_active_downloads_count() > 0:
+            return
 
     def get_downloading_status(self, video_id: str) -> Dict:
         """

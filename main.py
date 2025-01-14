@@ -10,6 +10,7 @@ from router.ingress_video_router import router as ingress_video_router
 from router.video_game_router import router as video_game_router
 from router.search_query_router import router as search_query_router
 from router.ws.downloads_ws_router import router as downloads_ws_router
+from router.test_router import router as test_router
 from utils.video_download.video_download_worker import VideoDownloadWorker
 from utils.video_scrapping.video_scrapping_worker import start_worker_process as start_scrapping_worker_process
 from utils.video_download.video_download_worker import start_worker_process as start_download_worker_process
@@ -28,6 +29,7 @@ app.add_middleware(
 app.include_router(ingress_video_router, prefix="/api/v1")
 app.include_router(video_game_router, prefix="/api/v1")
 app.include_router(search_query_router, prefix="/api/v1")
+app.include_router(test_router)
 app.include_router(downloads_ws_router)
 
 

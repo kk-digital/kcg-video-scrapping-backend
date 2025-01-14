@@ -26,11 +26,15 @@ async def list_search_queries(
     limit: int = Query(default=20),
     query: Optional[str] = Query(default=None),
     status: Optional[SEARCH_QUERY_STATUS] = Query(default=None),
+    from_date: str = Query(default=None),
+    to_date: str = Query(default=None),
+    order_by: str = Query(default="created_at"),
+    is_ascending: bool = Query(default=False),
 ):
     if offset < 0:
         offset = 0
     search_queries = search_query_controller.list_search_queries(
-        request.app.search_query_collection, offset, limit, query, status
+        request.app.search_query_collection, offset, limit, query, status, from_date, to_date, order_by, is_ascending
     )
 
     return ResponseSchema(success=True, data=search_queries)

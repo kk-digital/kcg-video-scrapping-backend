@@ -15,17 +15,31 @@ def list_search_queries(
     limit: int,
     search_query: Optional[str],
     status: Optional[SEARCH_QUERY_STATUS],
+    from_date: Optional[str], 
+    to_date: Optional[str], 
+    order_by: Optional[str], 
+    is_ascending: Optional[str],
 ):
     query = (
         {"query": {"$regex": f".*{search_query}.*", "$options": "i"}}
         if search_query
         else {}
     )
+    
     if status:
         query["status"] = status
+    
+    # Add date range filter if dates are provided
+    if from_date or to_date:
+        query["created_at"] = {}
+        if from_date:
+            query["created_at"]["$gte"] = datetime.fromisoformat(from_date)
+        if to_date:
+            query["created_at"]["$lte"] = datetime.fromisoformat(to_date)
+    
     return list(
         collection.find(query, {"_id": 0})
-        .sort("created_at", pymongo.DESCENDING)
+        .sort(order_by, pymongo.ASCENDING if is_ascending else pymongo.DESCENDING)
         .skip(offset)
         .limit(limit)
     )

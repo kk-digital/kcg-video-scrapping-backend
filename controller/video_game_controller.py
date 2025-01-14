@@ -7,8 +7,17 @@ from pymongo.collection import Collection
 from schema.video_game_schema import VideoGameSchema
 
 
-def get_all_video_games(collection: Collection, offset: int, limit: int, title: str, order_by: str, is_ascending: bool):
+def get_all_video_games(collection: Collection, offset: int, limit: int, title: str, from_date: str, to_date: str, order_by: str, is_ascending: bool):
     query = {"title": {"$regex": f".*{title}.*", "$options": "i"}} if title else {}
+    
+    # Add date range filter if dates are provided
+    if from_date or to_date:
+        query["created_at"] = {}
+        if from_date:
+            query["created_at"]["$gte"] = datetime.fromisoformat(from_date)
+        if to_date:
+            query["created_at"]["$lte"] = datetime.fromisoformat(to_date)
+
     return list(
         collection.find(query, {"_id": 0})
         .sort(order_by, pymongo.ASCENDING if is_ascending else pymongo.DESCENDING)

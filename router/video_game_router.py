@@ -25,14 +25,16 @@ async def list_video_games(
     offset: int = Query(default=0),
     limit: int = Query(default=20),
     title: str = Query(default=None),
+    from_date: str = Query(default=None),
+    to_date: str = Query(default=None),
     order_by: str = Query(default="created_at"),
     is_ascending: bool = Query(default=False),
 ):
-    # TODO: Investiage why offset is not specified in the query
+    # TODO: Investigate why offset is not specified in the query
     if offset < 0:
         offset = 0
     video_games = video_game_controller.get_all_video_games(
-        request.app.video_game_collection, offset, limit, title, order_by, is_ascending
+        request.app.video_game_collection, offset, limit, title, from_date, to_date, order_by, is_ascending
     )
 
     return ResponseSchema(

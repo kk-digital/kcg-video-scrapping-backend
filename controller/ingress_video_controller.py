@@ -57,6 +57,10 @@ def update_ingress_video(collection: Collection, ingress_video: dict):
     if ingress_video.get("status") is not None:
         ingress_video["dml_at"] = datetime.utcnow()
         ingress_video["dml_type"] = ingress_video["status"]
+
+        if ingress_video.get("status") == "downloading":
+            ingress_video["started_at"] = datetime.utcnow()
+            ingress_video["elapsed_time"] = 0
     
     return collection.update_one(
         {"video_id": ingress_video["video_id"]}, {"$set": ingress_video}

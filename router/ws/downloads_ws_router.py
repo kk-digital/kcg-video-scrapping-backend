@@ -2,7 +2,7 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 import psutil
 import asyncio
 from typing import List
-
+from utils.video_download.video_download_manager import VideoDownloadManager
 router = APIRouter()
 
 class ConnectionManager:
@@ -45,6 +45,7 @@ async def get_disk_space():
     }
 
 manager = ConnectionManager()
+download_manager = VideoDownloadManager()
 
 @router.websocket("/ws/downloads-status")
 async def downloads_ws(websocket: WebSocket):
@@ -55,6 +56,24 @@ async def downloads_ws(websocket: WebSocket):
             await manager.broadcast(disk_space)
             await asyncio.sleep(1)
     except WebSocketDisconnect:
-        manager.disconnect(websocket)
+        await manager.disconnect(websocket)
     except Exception:
-        manager.disconnect(websocket)
+        await manager.disconnect(websocket)
+
+
+@router.websocket("/ws/downloading-videos")
+async def downloads_ws(websocket: WebSocket):
+    await download_manager.connect_client(websocket)
+    try:
+        while True:
+            # Keep connection alive
+            downloading_videos = download_manager.get_all_active_downloads()
+            await download_manager.broadcast_status({
+                "downloading_videos": downloading_videos,
+            })
+
+            await asyncio.sleep(0.5)
+    except WebSocketDisconnect:
+        await download_manager.disconnect_client(websocket)
+    except Exception:
+        await download_manager.disconnect_client(websocket)

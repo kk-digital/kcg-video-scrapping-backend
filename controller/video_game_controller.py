@@ -1,6 +1,6 @@
-from typing import List
+from typing import List, Optional
 from datetime import datetime
-from fastapi import HTTPException
+from fastapi import HTTPException, Query
 import pymongo
 from pymongo.collection import Collection
 
@@ -35,8 +35,27 @@ def get_video_game_by_game_id(collection: Collection, game_id: str):
     return dict(result)
 
 
-def get_video_games_count(collection: Collection):
-    return collection.count_documents({})
+def get_video_games_count(
+    collection: Collection,
+    title: Optional[str] = Query(default=None),
+    from_date: str = Query(default=None),
+    to_date: str = Query(default=None),
+):
+    query = (
+        {"title": {"$regex": f".*{title}.*", "$options": "i"}}
+        if title
+        else {}
+    )
+    
+    # Add date range filter if dates are provided
+    if from_date or to_date:
+        query["created_at"] = {}
+        if from_date:
+            query["created_at"]["$gte"] = datetime.fromisoformat(from_date)
+        if to_date:
+            query["created_at"]["$lte"] = datetime.fromisoformat(to_date)
+
+    return collection.count_documents(query)
 
 
 def add_video_game(collection: Collection, video_game: dict):

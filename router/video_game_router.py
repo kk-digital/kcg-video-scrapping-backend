@@ -66,9 +66,12 @@ async def get_video_game_by_game_id(request: Request, game_id: str):
 )
 async def get_video_games_count(
     request: Request,
+    title: Optional[str] = Query(default=None),
+    from_date: str = Query(default=None),
+    to_date: str = Query(default=None),
 ):
     count = video_game_controller.get_video_games_count(
-        request.app.video_game_collection
+        request.app.video_game_collection, title, from_date, to_date
     )
     return ResponseSchema(success=True, data=count)
 

@@ -33,12 +33,51 @@ app.include_router(test_router)
 app.include_router(downloads_ws_router)
 
 
+def create_index_if_not_exists(collection, index_key, index_name):
+    existing_indexes = collection.index_information()
+    
+    if index_name not in existing_indexes:
+        collection.create_index(index_key, name=index_name)
+        print(f"Index '{index_name}' created on collection '{collection.name}'.")
+    else:
+        print(f"Index '{index_name}' already exists on collection '{collection.name}'.")
+
+
 def startup_db_client():
     app.mongodb_client = pymongo.MongoClient(MONGODB_URI, uuidRepresentation="standard")
     app.mongodb_db = app.mongodb_client["ingress-video-scrapping"]
     app.ingress_video_collection = app.mongodb_db["ingress-video"]
     app.video_game_collection = app.mongodb_db["video-game"]
     app.search_query_collection = app.mongodb_db["search-query"]
+
+    ingress_video_title=[
+        ('video_title', pymongo.ASCENDING)
+    ]
+    create_index_if_not_exists(app.ingress_video_collection ,ingress_video_title, 'ingress_video_title')
+    
+    ingress_video_resolution=[
+        ('video_title', pymongo.ASCENDING),
+        ('video_resolution', pymongo.ASCENDING)
+    ]
+    create_index_if_not_exists(app.ingress_video_collection ,ingress_video_resolution, 'ingress_video_resolution')
+    
+    ingress_video_length=[
+        ('video_title', pymongo.ASCENDING),
+        ('video_length', pymongo.ASCENDING)
+    ]
+    create_index_if_not_exists(app.ingress_video_collection ,ingress_video_length, 'ingress_video_length')
+    
+    ingress_video_filesize=[
+        ('video_title', pymongo.ASCENDING),
+        ('video_filesize', pymongo.ASCENDING)
+    ]
+    create_index_if_not_exists(app.ingress_video_collection ,ingress_video_filesize, 'ingress_video_filesize')
+    
+    ingress_video_frame_rate=[
+        ('video_title', pymongo.ASCENDING),
+        ('video_frame_rate', pymongo.ASCENDING)
+    ]
+    create_index_if_not_exists(app.ingress_video_collection ,ingress_video_frame_rate, 'ingress_video_frame_rate')
 
 
 async def startup():

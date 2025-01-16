@@ -1,8 +1,8 @@
 from typing import Optional, List
 from datetime import datetime
 from fastapi import HTTPException
+import pymongo
 from pymongo.collection import Collection
-
 from schema.ingress_video_schema import IngressVideoSchema
 
 
@@ -12,6 +12,8 @@ def get_list_ingress_videos(
     limit: int,
     status: Optional[str],
     title: Optional[str],
+    order_by: Optional[str], 
+    is_ascending: Optional[str],
 ):
     query = {}
     if status:
@@ -19,7 +21,12 @@ def get_list_ingress_videos(
     if title:
         query["video_title"] = {"$regex": f".*{title}.*", "$options": "i"}
 
-    return list(collection.find(query, {"_id": 0}).skip(offset).limit(limit))
+    return list(
+        collection.find(query, {"_id": 0})
+        .sort(order_by, pymongo.ASCENDING if is_ascending else pymongo.DESCENDING)
+        .skip(offset)
+        .limit(limit)
+    )
 
 
 def get_ingress_video_by_video_id(collection: Collection, video_id: str):

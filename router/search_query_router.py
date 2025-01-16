@@ -62,9 +62,12 @@ async def get_search_query_by_id(request: Request, id: str = Query()):
 async def get_search_queries_count(
     request: Request,
     status: Optional[str] = Query(default=None),
+    query: Optional[str] = Query(default=None),
+    from_date: str = Query(default=None),
+    to_date: str = Query(default=None),
 ):
     count = search_query_controller.get_search_queries_count(
-        request.app.search_query_collection, status
+        request.app.search_query_collection, status, query, from_date, to_date
     )
     return ResponseSchema(success=True, data=count)
 

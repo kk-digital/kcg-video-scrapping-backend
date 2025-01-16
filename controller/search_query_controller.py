@@ -3,7 +3,7 @@ import uuid
 from datetime import datetime
 import pymongo
 from pymongo.collection import Collection
-from fastapi import HTTPException
+from fastapi import HTTPException, Query
 
 from enums import SEARCH_QUERY_STATUS
 from schema.search_query_schema import SearchQuerySchema
@@ -54,11 +54,31 @@ def get_search_query_by_id(collection: Collection, id: str):
     return dict(result)
 
 
-def get_search_queries_count(collection: Collection, status: Optional[str]):
-    if status is None:
-        return collection.count_documents({})
+def get_search_queries_count(
+    collection: Collection, 
+    status: Optional[str],
+    search_query: Optional[str] = Query(default=None),
+    from_date: str = Query(default=None),
+    to_date: str = Query(default=None),
+):
+    query = (
+        {"query": {"$regex": f".*{search_query}.*", "$options": "i"}}
+        if search_query
+        else {}
+    )
+    
+    if status:
+        query["status"] = status
+    
+    # Add date range filter if dates are provided
+    if from_date or to_date:
+        query["created_at"] = {}
+        if from_date:
+            query["created_at"]["$gte"] = datetime.fromisoformat(from_date)
+        if to_date:
+            query["created_at"]["$lte"] = datetime.fromisoformat(to_date)
 
-    return collection.count_documents({"status": status})
+    return collection.count_documents(query)
 
 
 def add_search_query(collection: Collection, search_query: dict):

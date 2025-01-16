@@ -59,9 +59,13 @@ async def get_ingress_video_by_video_id(request: Request, video_id: str = Query(
     description="Get the count of ingress videos",
     response_model=ResponseSchema[int],
 )
-async def get_ingress_videos_count(request: Request, status: str = Query(default=None)):
+async def get_ingress_videos_count(
+    request: Request, 
+    status: str = Query(default=None),
+    title: Optional[str] = Query(default=None),
+):
     count = ingress_video_controller.get_ingress_videos_count(
-        request.app.ingress_video_collection, status
+        request.app.ingress_video_collection, status, title
     )
     return ResponseSchema(success=True, data=count)
 

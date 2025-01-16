@@ -85,9 +85,11 @@ def exists_ingress_video(collection: Collection, video_id: str):
     return collection.find_one({"video_id": video_id}) is not None
 
 
-def get_ingress_videos_count(collection: Collection, status: Optional[str] = None):
-    if status is None:
-        return collection.count_documents({})
-    else:
-        return collection.count_documents({"status": status})
-       
+def get_ingress_videos_count(collection: Collection, status: Optional[str] = None, title: Optional[str] = None):
+    query = {}
+    if status:
+        query = {"status": status}
+    if title:
+        query["video_title"] = {"$regex": f".*{title}.*", "$options": "i"}
+
+    return collection.count_documents(query)

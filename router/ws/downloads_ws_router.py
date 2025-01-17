@@ -53,7 +53,11 @@ async def downloads_ws(websocket: WebSocket):
     try:
         while True:
             disk_space = await get_disk_space()
-            await manager.broadcast(disk_space)
+            await manager.broadcast({
+                "type": "download_status",
+                "disk_space": disk_space,
+                "active_acount": download_manager.get_active_downloads_count(),
+            })
             await asyncio.sleep(1)
     except WebSocketDisconnect:
         await manager.disconnect(websocket)

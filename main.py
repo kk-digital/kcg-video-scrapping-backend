@@ -100,33 +100,6 @@ async def shutdown():
         app.scrapping_worker_process.join()
 
 
-def add_ingress_videos():
-    ingress_videos = []
-
-    import json
-    from tqdm import tqdm
-
-    with open("data/all_ingress_videos.json", "r") as f:
-        ingress_videos = json.load(f)
-
-    for ingress_video in tqdm(ingress_videos):
-        ingress_video["status"] = INGRESS_VIDEO_STATUS.DOWNLOADED
-        ingress_video["processed"] = True
-        app.ingress_video_collection.insert_one(ingress_video)
-
-
-def add_video_games():
-
-    video_games = []
-    import json
-    from tqdm import tqdm
-
-    with open("data/all_video_games.json", "r") as f:
-        video_games = json.load(f)
-    for video_game in tqdm(video_games):
-        app.video_game_collection.insert_one(video_game)
-
-
 app.add_event_handler("startup", startup)
 app.add_event_handler("shutdown", shutdown)
 

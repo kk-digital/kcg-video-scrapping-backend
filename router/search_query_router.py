@@ -108,9 +108,9 @@ async def update_search_query(request: Request, search_query: SearchQueryUpdateS
     description="Delete an search query with given search query id",
     response_model=ResponseSchema[DeletedCountSchema],
 )
-def delete_search_query(request: Request, search_query_id: str = Query()):
+def delete_search_query(request: Request, query_id: str = Query()):
     deleted_count = search_query_controller.delete_search_query(
-        request.app.search_query_collection, id=search_query_id
+        request.app.search_query_collection, id=query_id
     )
 
     return ResponseSchema(

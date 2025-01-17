@@ -1,8 +1,8 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
-import psutil
 import asyncio
 from typing import List
 from utils.video_download.video_download_manager import VideoDownloadManager
+from utils.disk_utils import get_disk_space
 router = APIRouter()
 
 class ConnectionManager:
@@ -31,18 +31,6 @@ class ConnectionManager:
         # Clean up disconnected connections
         for connection in disconnected_connections:
             self.disconnect(connection)
-
-async def get_disk_space():
-    '''
-    Get disk space information for sending to clients
-    '''
-    disk = psutil.disk_usage('/')
-    return {
-        "type": "disk_space",
-        "free": disk.free,
-        "total": disk.total,
-        "percent": disk.percent
-    }
 
 manager = ConnectionManager()
 download_manager = VideoDownloadManager()

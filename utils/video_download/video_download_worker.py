@@ -3,6 +3,7 @@ from utils.http.requests import http_get_pending_ingress_videos, http_get_downlo
 from utils.video_download.video_download_manager import VideoDownloadManager
 from utils.logger import download_logger
 from multiprocessing import Process
+from utils.disk_utils import get_disk_space
 
 
 class VideoDownloadWorker:
@@ -37,6 +38,11 @@ class VideoDownloadWorker:
     async def run(self):
         self.is_running = True
         while self.is_running:
+            disk_space = await get_disk_space()
+            if disk_space["percent"] > 90:
+                download_logger.warning("Disk space is low, will idle for %s", self.fetch_interrval * 10)
+                await asyncio.sleep(self.fetch_interrval * 10)
+                continue
             try:
                 active_downloads_count = (
                     self.download_manager.get_active_downloads_count()

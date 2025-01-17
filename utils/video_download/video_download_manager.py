@@ -67,7 +67,6 @@ class VideoDownloadManager:
             # Only update progress if it has changed significantly
             if video_id in self.active_downloads:
                 current_progress = self.active_downloads[video_id]["progress"]
-                print("here", current_progress, progress)
                 if progress != current_progress and (progress - current_progress > 3 or progress == 100):
                     self.update_progress(INGRESS_VIDEO_STATUS.DOWNLOADING, video_id, progress, elapsed_time)
         elif d["status"] == "finished":

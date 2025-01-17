@@ -111,8 +111,7 @@ def add_ingress_videos():
 
     for ingress_video in tqdm(ingress_videos):
         ingress_video["status"] = INGRESS_VIDEO_STATUS.DOWNLOADED
-        ingress_video["transferred"] = True
-        ingress_video.pop("processed", None)
+        ingress_video["processed"] = True
         app.ingress_video_collection.insert_one(ingress_video)
 
 

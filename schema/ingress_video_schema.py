@@ -21,7 +21,7 @@ class IngressVideoBaseSchema(BaseModel):
     video_language: Optional[str]
     failed_reason: Optional[str] = Field(default=None)
     game_id: str
-    transferred: bool = Field(default=False)
+    processed: bool = Field(default=False)
     status: INGRESS_VIDEO_STATUS = Field(default=INGRESS_VIDEO_STATUS.PENDING)
     
 
@@ -42,7 +42,7 @@ class IngressVideoUpdateSchema(BaseModel):
     video_language: Optional[str] = Field(default=None)
     failed_reason: Optional[str] = Field(default=None)
     game_id: Optional[str] = Field(default=None)
-    transferred: Optional[bool] = Field(default=None)
+    processed: Optional[bool] = Field(default=None)
     status: INGRESS_VIDEO_STATUS = Field(default=None)
 
 

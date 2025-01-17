@@ -32,7 +32,7 @@ def http_update_ingress_video(data):
 
 
 def http_get_pending_ingress_videos(offset: int = 0, limit: int = 1):
-    url = f"{BASE_ENDPOINT_URL}/api/v1/ingress-videos/list-ingress-videos?status={INGRESS_VIDEO_STATUS.PENDING}&offset={offset}&limit={limit}"
+    url = f"{BASE_ENDPOINT_URL}/api/v1/ingress-videos/list-ingress-videos?status={INGRESS_VIDEO_STATUS.PENDING.value}&offset={offset}&limit={limit}"
     headers = {"Content-Type": "application/json"}
     try:
         response = requests.get(url, headers=headers)
@@ -45,7 +45,7 @@ def http_get_pending_ingress_videos(offset: int = 0, limit: int = 1):
         return None
 
 def http_get_downloadding_ingress_videos(offset: int = 0, limit: int = 1):
-    url = f"{BASE_ENDPOINT_URL}/api/v1/ingress-videos/list-ingress-videos?status={INGRESS_VIDEO_STATUS.DOWNLOADING}&offset={offset}&limit={limit}"
+    url = f"{BASE_ENDPOINT_URL}/api/v1/ingress-videos/list-ingress-videos?status={INGRESS_VIDEO_STATUS.DOWNLOADING.value}&offset={offset}&limit={limit}"
     headers = {"Content-Type": "application/json"}
     try:
         response = requests.get(url, headers=headers)
@@ -72,7 +72,7 @@ def http_update_query(data):
 
 
 def http_get_pending_query(offset: int = 0, limit: int = 10):
-    url = f"{BASE_ENDPOINT_URL}/api/v1/search-queries/list-search-queries?status={SEARCH_QUERY_STATUS.PENDING}&offset={offset}&limit={limit}"
+    url = f"{BASE_ENDPOINT_URL}/api/v1/search-queries/list-search-queries?status={SEARCH_QUERY_STATUS.PENDING.value}&offset={offset}&limit={limit}"
     headers = {"Content-Type": "application/json"}
     try:
         response = requests.get(url, headers=headers)
@@ -85,7 +85,7 @@ def http_get_pending_query(offset: int = 0, limit: int = 10):
         return None
 
 def http_get_extracting_query(offset: int = 0, limit: int = 10):
-    url = f"{BASE_ENDPOINT_URL}/api/v1/search-queries/list-search-queries?status={SEARCH_QUERY_STATUS.EXTRACTING}&offset={offset}&limit={limit}"
+    url = f"{BASE_ENDPOINT_URL}/api/v1/search-queries/list-search-queries?status={SEARCH_QUERY_STATUS.EXTRACTING.value}&offset={offset}&limit={limit}"
     headers = {"Content-Type": "application/json"}
     try:
         response = requests.get(url, headers=headers)

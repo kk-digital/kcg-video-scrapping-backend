@@ -115,6 +115,17 @@ async def update_ingress_video(
     )
     return ResponseSchema(success=True, message="Ingress video updated successfully")
 
+@router.post(
+        "/retry-downloading-ingress-video",
+        status_code=200,
+        description="Retry downloading an ingress video with given video id",
+        response_model=ResponseSchema[None],
+)
+async def retry_downloading_ingress_video(request: Request, data: IngressVideoIdsSchema):
+    ingress_video_controller.retry_downloading_ingress_video(
+        request.app.ingress_video_collection, data.ids
+    )
+    return ResponseSchema(success=True, message="Retry downloading ingress video successfully")
 
 @router.delete(
     "/delete-ingress-video",

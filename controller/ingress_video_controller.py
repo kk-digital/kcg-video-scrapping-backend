@@ -73,6 +73,16 @@ def update_ingress_video(collection: Collection, ingress_video: dict):
         {"video_id": ingress_video["video_id"]}, {"$set": ingress_video}
     )
 
+def retry_downloading_ingress_video(collection: Collection, video_ids: List[str]):
+    for video_id in video_ids:
+        if not exists_ingress_video(collection, video_id):
+            raise HTTPException(status_code=404, detail=f"Ingress video not found. video_id: {video_id}")
+        
+        collection.update_one(
+            {"video_id": video_id},
+            {"$set": {"status": "downloading", "started_at": datetime.utcnow(), "elapsed_time": 0}}
+        )
+
 
 def delete_ingress_video(collection: Collection, video_id: str):
     if not exists_ingress_video(collection, video_id):

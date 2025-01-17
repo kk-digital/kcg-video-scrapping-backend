@@ -48,7 +48,7 @@ async def list_video_games(
     description="Get video game by given game id",
     response_model=ResponseSchema[VideoGameSchema],
 )
-async def get_video_game_by_game_id(request: Request, game_id: str):
+async def get_video_game_by_game_id(request: Request, game_id: str = Query()):
     video_game = video_game_controller.get_video_game_by_game_id(
         request.app.video_game_collection, game_id
     )

@@ -52,8 +52,9 @@ class VideoDownloadWorker:
                     added_downloads = await self.process_pending_downloads()
                     # If no new downloads were added, idle for a while
                     if added_downloads == 0 and active_downloads_count == 0:
-                        download_logger.info("There is a pending video to download, will idle for %s", self.fetch_interrval)
-                        await asyncio.sleep(self.fetch_interrval)
+                        download_logger.info("There is a no pending video to download, will idle for %s", self.fetch_interrval)
+                    
+                    await asyncio.sleep(self.fetch_interrval)
                 elif self.max_downloads < active_downloads_count:
                     download_logger.info(f"Max downloads({self.max_downloads}) reached, will idle for %s", self.fetch_interrval)
                 
